@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="99fecace-95e5-4845-88d9-3c0b9f9281eb" name="Default" comment="" />
+    <list default="true" id="99fecace-95e5-4845-88d9-3c0b9f9281eb" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+    </list>
     <ignored path="waynestate-api-php.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -24,11 +26,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Connector.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Connector.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Connector.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.43449575" vertical-offset="8287" max-vertical-offset="10548">
-              <caret line="243" column="5" selection-start-line="243" selection-start-column="5" selection-end-line="243" selection-end-column="5" />
+            <state vertical-scroll-proportion="-322.66666" vertical-offset="0" max-vertical-offset="10548">
+              <caret line="242" column="3" selection-start-line="242" selection-start-column="3" selection-end-line="242" selection-end-column="3" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider editor-type-id="MarkdownPreviewEditor">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.10084034" vertical-offset="0" max-vertical-offset="1584">
+              <caret line="3" column="14" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
               <folding />
             </state>
           </provider>
@@ -54,6 +69,7 @@
       <list>
         <option value="$PROJECT_DIR$/src/ConnectorException.php" />
         <option value="$PROJECT_DIR$/src/Connector.php" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -234,8 +250,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Connector.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43449575" vertical-offset="8287" max-vertical-offset="10548">
-          <caret line="243" column="5" selection-start-line="243" selection-start-column="5" selection-end-line="243" selection-end-column="5" />
+        <state vertical-scroll-proportion="-322.66666" vertical-offset="0" max-vertical-offset="10548">
+          <caret line="242" column="3" selection-start-line="242" selection-start-column="3" selection-end-line="242" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider editor-type-id="MarkdownPreviewEditor">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.10084034" vertical-offset="0" max-vertical-offset="1584">
+          <caret line="3" column="14" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
           <folding />
         </state>
       </provider>
