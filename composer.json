@@ -1,0 +1,22 @@
+{
+  "name": "nickdenardis/waynestate-api",
+  "description": "An API wrapper for the Wayne State University v1 API",
+  "license": "MIT",
+  "require": {
+    "php": ">=5.3"
+  },
+  "authors": [
+    {
+      "name": "Nick DeNardis",
+      "email": "nick.denardis@gmail.com"
+    }
+  ],
+  "homepage": "https://github.com/nickdenardis/waynestate-api-php",
+  "autoload": {
+    "autoload": {
+      "psr-4":{
+        "Waynestate\\Api\\":"src"
+      }
+    }
+  },
+}
