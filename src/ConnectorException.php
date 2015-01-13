@@ -9,11 +9,11 @@ class ConnectorException extends \Exception
     /**
      * @var string
      */
-    var $details;
+    public $details;
     /**
      * @var string
      */
-    var $method;
+    public $method;
 
     /**
      * @param $message

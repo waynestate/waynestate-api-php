@@ -8,29 +8,32 @@ use Waynestate\Api\ConnectorException;
  */
 class Connector
 {
-    var $apiKey;  // To obtain an API key: http://api.wayne.edu/
-    var $cmsREST = 'https://api.wayne.edu/v1/'; // Default use the secure endpoint
-    var $parser = 'json'; // Use the included XML parser? Default: true.
-    var $debug = false; // Switch for debug mode
-    var $sessionid;
-    var $same_server = false;
-    var $cache_dir;
+    public $apiKey;  // To obtain an API key: http://api.wayne.edu/
+    public $cmsREST = 'https://api.wayne.edu/v1/'; // Default use the secure endpoint
+    public $parser = 'json'; // Use the included XML parser? Default: true.
+    public $debug = false; // Switch for debug mode
+    public $sessionid;
+    public $same_server = false;
+    public $cache_dir;
 
     public function __construct($apiKey = false, $mode = 'production')
     {
-        if ($apiKey)
+        if ($apiKey) {
             $this->apiKey = $apiKey;
+        }
 
         if ($mode == 'dev' || $mode == 'development') {
             // Use the local server paths for now
             $this->cmsREST = 'https://www-dev.api.wayne.edu/v1/';
         }
 
-        if (defined('API_ENDPOINT') && API_ENDPOINT != '')
+        if (defined('API_ENDPOINT') && API_ENDPOINT != '') {
             $this->cmsREST = API_ENDPOINT;
+        }
 
-        if (defined('API_CACHE_DIR') && API_CACHE_DIR != '')
+        if (defined('API_CACHE_DIR') && API_CACHE_DIR != '') {
             $this->cache_dir = API_CACHE_DIR;
+        }
     }
 
     /**
@@ -55,7 +58,9 @@ class Connector
         $args = '';
         foreach ($p as $key => $value) {
             // Don't include these
-            if ($key == 'method' || $key == 'submit' || $key == 'MAX_FILE_SIZE') continue;
+            if ($key == 'method' || $key == 'submit' || $key == 'MAX_FILE_SIZE') {
+                continue;
+            }
 
             $args .= $key . '=' . urlencode($value) . '&';
         }
@@ -69,10 +74,8 @@ class Connector
      */
     protected function ensureSslEndpoint()
     {
-
         // If the endpoint isn't on SSL
         if (substr($this->cmsREST, 0, 5) != 'https') {
-
             // Force an SSL endpoint
             $endpoint = parse_url($this->cmsREST);
             $this->cmsREST = 'https://' . $endpoint['host'] . $endpoint['path'];
@@ -82,22 +85,24 @@ class Connector
         return $this->cmsREST;
     }
 
-    public function sendRequest($method=null,$args=null,$postmethod='get',$tryagain=true, $buildquery=true) {
-        try{
+    public function sendRequest($method=null, $args=null, $postmethod='get', $tryagain=true, $buildquery=true)
+    {
+        try {
             $result = $this->Request($method, $args, $postmethod, '', $buildquery);
 
-            if ($tryagain && is_null($result)){
+            if ($tryagain && is_null($result)) {
                 $result = $this->Request($method, $args, $postmethod, false, $buildquery);
-            }elseif (is_null($result)){
+            } elseif (is_null($result)) {
                 throw new ConnectorException("No response", $method, 8888, 'n/a');
             }
 
-            if (is_array($result) && isset($result['error']) && $result['error']){
+            if (is_array($result) && isset($result['error']) && $result['error']) {
                 throw new ConnectorException($result['error']['message'], $method, $result['error']['code'], $result['error']['field']);
             }
-        }catch (ConnectorException $e) {}
+        } catch (ConnectorException $e) {
+        }
 
-        if (isset($result['response'])){
+        if (isset($result['response'])) {
             return $result['response'];
         }
 
@@ -145,8 +150,9 @@ class Connector
         $reqURL = $this->cmsREST . '?api_key=' . $this->apiKey . '&return=json&method=' . $method;
 
         // If there is a session, pass the info along
-        if ($this->sessionid != '')
+        if ($this->sessionid != '') {
             $args['sessionid'] = (string)urlencode($this->sessionid);
+        }
 
         if ($postmethod == 'get') {
             if (is_array($args)) {
@@ -158,8 +164,9 @@ class Connector
             $reqURL .= '&' . $getArgs;
         }
 
-        if ($postmethod == 'post' && !empty($args['sessionid']))
+        if ($postmethod == 'post' && !empty($args['sessionid'])) {
             $reqURL .= '&sessionid=' . $args['sessionid'];
+        }
 
         $curl_handle = curl_init();
 
@@ -176,8 +183,9 @@ class Connector
         $http_header = array();
         $http_header[] = 'X-Api-Key: ' . $this->apiKey;
         $http_header[] = 'X-Return: json';
-        if (isset($args['sessionid']))
+        if (isset($args['sessionid'])) {
             $http_header[] = 'X-Sessionid: ' . $args['sessionid'];
+        }
 
         curl_setopt($curl_handle, CURLOPT_HTTPHEADER, $http_header);
 
@@ -192,8 +200,9 @@ class Connector
 
         $response = curl_exec($curl_handle);
 
-        if (!$response)
+        if (!$response) {
             $response = curl_error($curl_handle);
+        }
 
         curl_close($curl_handle);
 
@@ -216,7 +225,6 @@ class Connector
             && array_key_exists('response', $response) // Ensure there is a response in the response
             && !array_key_exists('error', $response['response']) // Ensure there wasn't an error (params, etc)
         ) {
-
             // Debug?
             if ($this->debug) {
                 echo '<pre>';
@@ -242,8 +250,9 @@ class Connector
      */
     protected function Cache($action, $filename, $data = '', $max_age = '')
     {
-        if ( ! is_dir($this->cache_dir) )
+        if (! is_dir($this->cache_dir)) {
             return '';
+        }
 
         // Set the full path
         $cache_file = $this->cache_dir . $filename;
@@ -256,12 +265,14 @@ class Connector
 
             if (is_file($cache_file) && $max_age != '') {
                 // Make sure $max_age is negitive
-                if (is_string($max_age) && substr($max_age, 0, 1) != '-')
+                if (is_string($max_age) && substr($max_age, 0, 1) != '-') {
                     $max_age = '-' . $max_age;
+                }
 
                 // Make sure $max_age is an INT
-                if (!is_int($max_age))
+                if (!is_int($max_age)) {
                     $max_age = strtotime($max_age);
+                }
 
                 // Test to see if the file is still fresh enough
                 if (filemtime($cache_file) >= date($max_age)) {
