@@ -17,6 +17,7 @@ Create the object
 
     # start.php
 
+    // Optional
     use Waynestate\Api\Connector;
 
     ...
