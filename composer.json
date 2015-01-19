@@ -13,10 +13,8 @@
   ],
   "homepage": "https://github.com/nickdenardis/waynestate-api-php",
   "autoload": {
-    "autoload": {
-      "psr-4":{
-        "Waynestate\\Api\\":"src"
-      }
+    "psr-4":{
+      "Waynestate\\Api\\":"src"
     }
   }
 }
