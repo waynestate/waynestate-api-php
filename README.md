@@ -8,7 +8,7 @@ Installation
 
 To install this library, run the command below and you will get the latest version
 
-    composer require nickdenardis/waynestate-api-php
+    composer require waynestate/waynestate-api-php
 
 Usage
 ------------
@@ -38,7 +38,7 @@ Create the object
 
  * [ParsePromos](https://github.com/waynestate/parse-promos)
  * [ParseMenu](https://github.com/waynestate/parse-menu)
- 
+
 Contributing
 ------------
 
