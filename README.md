@@ -8,7 +8,7 @@ Installation
 
 To install this library, run the command below and you will get the latest version
 
-    composer require waynestate/waynestate-api-php
+    composer require waynestate/waynestate-api
 
 Usage
 ------------
