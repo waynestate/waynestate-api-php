@@ -9,12 +9,18 @@ use Waynestate\Api\ConnectorException;
 class Connector
 {
     public $apiKey;  // To obtain an API key: http://api.wayne.edu/
-    public $cmsREST = 'https://api.wayne.edu/v1/'; // Default use the secure endpoint
     public $parser = 'json'; // Use the included XML parser? Default: true.
     public $debug = false; // Switch for debug mode
     public $sessionid;
-    public $same_server = false;
     public $cache_dir;
+
+    private $endpoints = array(
+        'production' => 'https://api.wayne.edu/v1/',
+        'development' => 'https://www-dev.api.wayne.edu/v1/',
+        'user' => '',
+    );
+    private $active_endpoint = 'production';
+    private $prod_counter = 0;
 
     public function __construct($apiKey = false, $mode = 'production')
     {
@@ -23,12 +29,11 @@ class Connector
         }
 
         if ($mode == 'dev' || $mode == 'development') {
-            // Use the local server paths for now
-            $this->cmsREST = 'https://www-dev.api.wayne.edu/v1/';
+            $this->active_endpoint = 'development';
         }
 
         if (defined('API_ENDPOINT') && API_ENDPOINT != '') {
-            $this->cmsREST = API_ENDPOINT;
+            $this->addEndpoint('user', API_ENDPOINT);
         }
 
         if (defined('API_CACHE_DIR') && API_CACHE_DIR != '') {
@@ -71,18 +76,21 @@ class Connector
 
     /**
      * Ensure the endpoint is SSL
+     *
+     * @param $url
+     * @return string
      */
-    protected function ensureSslEndpoint()
+    protected function ensureSslEndpoint($url)
     {
         // If the endpoint isn't on SSL
-        if (substr($this->cmsREST, 0, 5) != 'https') {
+        if (substr($url, 0, 5) != 'https') {
             // Force an SSL endpoint
-            $endpoint = parse_url($this->cmsREST);
-            $this->cmsREST = 'https://' . $endpoint['host'] . $endpoint['path'];
+            $endpoint = parse_url($url);
+            $url = 'https://' . $endpoint['host'] . $endpoint['path'];
         }
 
         // SSL already enabled
-        return $this->cmsREST;
+        return $url;
     }
 
     public function sendRequest($method=null, $args=null, $postmethod='get', $tryagain=true, $buildquery=true)
@@ -119,19 +127,22 @@ class Connector
      */
     private function Request($method = null, $args = null, $postmethod = 'get', $tryagain = false, $buildquery = true)
     {
-        // Ensure we are on SSL
-        $this->ensureSslEndpoint();
+        // Get the endpoint for this call
+        $endpoint_url = $this->getEndpoint();
 
         // Check for a cached version of the call results
         if (strtolower($postmethod) == 'get' && array_key_exists('ttl', (array)$args)) {
             // Create a standard filename
-            $filename = str_replace('/', '.', strtolower($method)) . '-' . md5($this->cmsREST . $this->apiKey . $this->sessionid . serialize($args));
+            $filename = str_replace('/', '.', strtolower($method)) . '-' . md5($endpoint_url . $this->apiKey . $this->sessionid . serialize($args));
 
             // Check to see if there is a cache
             $cache_serialized = $this->Cache('get', $filename, '', $args['ttl']);
 
             // If a cached version exists
             if ($cache_serialized != '') {
+                // Use the cached results
+                $response = unserialize($cache_serialized);
+
                 // Debug?
                 if ($this->debug) {
                     echo '<pre>';
@@ -140,14 +151,12 @@ class Connector
                     echo '</pre>';
                 }
 
-                // Use the cached results
-                $response = unserialize($cache_serialized);
                 return $response;
             }
         }
 
         // Convert array to string
-        $reqURL = $this->cmsREST . '?api_key=' . $this->apiKey . '&return=json&method=' . $method;
+        $reqURL = $endpoint_url . '?api_key=' . $this->apiKey . '&return=json&method=' . $method;
 
         // If there is a session, pass the info along
         if ($this->sessionid != '') {
@@ -250,7 +259,7 @@ class Connector
      */
     protected function Cache($action, $filename, $data = '', $max_age = '')
     {
-        if (! is_dir($this->cache_dir)) {
+        if (!is_dir($this->cache_dir)) {
             return '';
         }
 
@@ -295,5 +304,75 @@ class Connector
         }
 
         return $cache;
+    }
+
+    /**
+     * Use the production endpoint for the next few calls
+     *
+     * @param int $times
+     */
+    public function useProduction($times = 1)
+    {
+        $this->prod_counter = $times;
+    }
+
+    /**
+     * Get the current active endpoint
+     *
+     * @return mixed
+     */
+    protected function getEndpoint()
+    {
+        // If force production is in effect
+        if ($this->prod_counter-- > 0) {
+            return $this->endpoints['production'];
+        }
+
+        // Return the active endpoint
+        return $this->endpoints[$this->active_endpoint];
+    }
+
+    /**
+     * Add a user defined endpoint
+     *
+     * @param $name
+     * @param $url
+     * @return bool
+     */
+    protected function addEndpoint($name, $url)
+    {
+        // Add or modify the endpoint URL
+        $this->endpoints[$name] = $this->ensureSslEndpoint($url);
+        $this->active_endpoint = $name;
+
+        // Return boolean if endpoint has been added successfully
+        return array_key_exists($name, $this->endpoints);
+    }
+
+    /**
+     * Backwards compatibility for public access to the $cmsREST property
+     * Example: `$api->cmsREST = 'http...`
+     *
+     * @param $name
+     * @param $value
+     */
+    public function __set($name, $value)
+    {
+        if ($name == 'cmsREST') {
+            $this->addEndpoint('user', $value);
+        }
+    }
+
+    /**
+     * Backwards compatibility to access the $cmsREST property
+     * Example: `$api->cmsREST;`
+     *
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name) {
+        if ($name == 'cmsREST') {
+            return $this->endpoints['user'];
+        }
     }
 }
