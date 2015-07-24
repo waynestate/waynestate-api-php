@@ -8,7 +8,7 @@ Installation
 
 To install this library, run the command below and you will get the latest version
 
-    composer require waynestate/waynestate-api-php
+    composer require waynestate/waynestate-api
 
 Usage
 ------------
@@ -17,12 +17,11 @@ Create the object
 
     # start.php
 
-    // Optional
     use Waynestate\Api\Connector;
 
     ...
 
-    $api = new Waynestate\Api\Connector(API_KEY);
+    $api = new Connector(API_KEY);
 
     // Set the params
     $params = array(
@@ -33,6 +32,19 @@ Create the object
 
     // Get promotions from the API
     $promos = $api->sendRequest('cms/promotions/listing', $params);
+    
+Setting a unique endpoint **before** the Connector is instantiated
+
+    define('API_ENDPOINT', 'http://api.domain.com/v1/');
+    
+Setting a unique endpoint **after** the Connector is instantiated
+
+    $api->cmsREST = 'http://api.domain.com/v1/';
+    
+Temporarily using the 'production' endpoint
+
+    # Use the production endpoint for only the next $api->sendRequest() call
+    $api->nextRequestProduction();
 
  Best used with the following packages:
 
