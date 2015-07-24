@@ -20,7 +20,7 @@ class Connector
         'user' => '',
     );
     private $active_endpoint = 'production';
-    private $prod_counter = 0;
+    private $force_production = false;
 
     public function __construct($apiKey = false, $mode = 'production')
     {
@@ -309,11 +309,10 @@ class Connector
     /**
      * Use the production endpoint for the next few calls
      *
-     * @param int $times
      */
-    public function useProduction($times = 1)
+    public function nextRequestProduction()
     {
-        $this->prod_counter = $times;
+        $this->force_production = true;
     }
 
     /**
@@ -324,7 +323,8 @@ class Connector
     protected function getEndpoint()
     {
         // If force production is in effect
-        if ($this->prod_counter-- > 0) {
+        if ($this->force_production) {
+            $this->force_production = false;
             return $this->endpoints['production'];
         }
 

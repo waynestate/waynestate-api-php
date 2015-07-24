@@ -44,10 +44,7 @@ Setting a unique endpoint **after** the Connector is instantiated
 Temporarily using the 'production' endpoint
 
     # Use the production endpoint for only the next $api->sendRequest() call
-    $api->useProduction();
-    
-    # Use the production endpoint for the next 5 $api->sendRequest() calls
-    $api->useProduction(5);    
+    $api->nextRequestProduction();
 
  Best used with the following packages:
 
