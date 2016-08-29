@@ -36,6 +36,10 @@ class Connector
             $this->addEndpoint('user', API_ENDPOINT);
         }
 
+        if(getenv('WSUAPI_ENDPOINT') != ''){
+            $this->addEndPoint('user', getenv('WSUAPI_ENDPOINT'));
+        }
+
         if (defined('API_CACHE_DIR') && API_CACHE_DIR != '') {
             $this->cache_dir = API_CACHE_DIR;
         }
