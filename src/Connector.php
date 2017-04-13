@@ -301,7 +301,7 @@ class Connector
                 $fp = fopen($cache_file, "w");
                 fwrite($fp, $store);
                 fclose($fp);
-                chmod($cache_file, 0644);
+                chmod($cache_file, 0770);
 
                 $cache = strlen($store);
             }
