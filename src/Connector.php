@@ -187,7 +187,7 @@ class Connector
         curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl_handle, CURLOPT_CONNECTTIMEOUT, 1);
         curl_setopt($curl_handle, CURLOPT_HEADER, 0);
-        curl_setopt($curl_handle, CURLOPT_TIMEOUT, 0);
+        curl_setopt($curl_handle, CURLOPT_TIMEOUT, 3);
         curl_setopt($curl_handle, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
         curl_setopt($curl_handle, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
