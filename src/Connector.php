@@ -36,13 +36,35 @@ class Connector
             $this->addEndpoint('user', API_ENDPOINT);
         }
 
-        if(getenv('WSUAPI_ENDPOINT') != ''){
-            $this->addEndPoint('user', getenv('WSUAPI_ENDPOINT'));
+        $envVariables = $this->getEnvVariables();
+
+        if(!empty($envVariables['WSUAPI_ENDPOINT'])){
+            $this->addEndPoint('user', $envVariables['WSUAPI_ENDPOINT']);
         }
 
         if (defined('API_CACHE_DIR') && API_CACHE_DIR != '') {
             $this->cache_dir = API_CACHE_DIR;
         }
+    }
+
+    /**
+     * Get the Environment Variables
+     *
+     * If the Laravel Helper function env is available then use it, otherwise getenv
+     *
+     * @return array
+     */
+    private function getEnvVariables()
+    {
+        if(function_exists('env')){
+            return [
+                'WSUAPI_ENDPOINT' => env('WSUAPI_ENDPOINT'),
+            ];
+        }
+
+        return [
+            'WSUAPI_ENDPOINT' => getenv('WSUAPI_ENDPOINT'),
+        ];
     }
 
     /**
