@@ -210,7 +210,7 @@ class Connector
         curl_setopt($curl_handle, CURLOPT_CONNECTTIMEOUT, 1);
         curl_setopt($curl_handle, CURLOPT_HEADER, 0);
         curl_setopt($curl_handle, CURLOPT_TIMEOUT, 20);
-        curl_setopt($curl_handle, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+        curl_setopt($curl_handle, CURLOPT_USERAGENT, (array_key_exists('HTTP_USER_AGENT', $_SERVER)?$_SERVER['HTTP_USER_AGENT']:''));
         curl_setopt($curl_handle, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
 
