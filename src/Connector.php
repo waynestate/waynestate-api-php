@@ -140,7 +140,13 @@ class Connector
             return $result['response'];
         }
 
-        return $result;
+        return is_array($result) ? $result : [
+            'error' => [
+                'message' => 'No response from API',
+                'code' => 8888,
+                'field' => 'n/a',
+            ],
+        ];
     }
 
     /**
@@ -213,6 +219,7 @@ class Connector
         curl_setopt($curl_handle, CURLOPT_USERAGENT, (array_key_exists('HTTP_USER_AGENT', $_SERVER)?$_SERVER['HTTP_USER_AGENT']:''));
         curl_setopt($curl_handle, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
 
         // Set the custom HTTP Headers
         $http_header = array();
@@ -233,24 +240,50 @@ class Connector
             }
         }
 
-        $response = curl_exec($curl_handle);
-
-        if (!$response) {
-            $response = curl_error($curl_handle);
-        }
-
+        $raw_response = curl_exec($curl_handle);
+        $http_code = curl_getinfo($curl_handle, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($curl_handle);
         curl_close($curl_handle);
+
+        if ($raw_response === false || $raw_response === '') {
+            $response = [
+                'meta' => ['code' => $http_code ?: 500],
+                'response' => [
+                    'error' => [
+                        'message' => 'cURL error: ' . ($curl_error ?: 'No response'),
+                        'code' => $http_code ?: 500,
+                        'field' => '',
+                    ],
+                ],
+            ];
+        } elseif ($this->parser == 'json') {
+            $response = json_decode($raw_response, true);
+
+            if (!is_array($response)) {
+                $error_message = ($http_code == 429)
+                    ? 'Rate limit exceeded (HTTP 429). Too many requests.'
+                    : ($http_code >= 400 ? 'HTTP error ' . $http_code : 'Invalid JSON response from API.');
+
+                $response = [
+                    'meta' => ['code' => $http_code ?: 500],
+                    'response' => [
+                        'error' => [
+                            'message' => $error_message,
+                            'code' => $http_code ?: 500,
+                            'field' => '',
+                        ],
+                    ],
+                ];
+            }
+        } else {
+            $response = $raw_response;
+        }
 
         // Debug?
         if ($this->debug) {
             echo '<pre>';
             print_r($response);
             echo '</pre>';
-        }
-
-        // Return array
-        if ($this->parser == 'json') {
-            $response = json_decode($response, true);
         }
 
         // If successful return and TTL is set, cache it
